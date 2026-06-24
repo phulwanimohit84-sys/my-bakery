@@ -1,1 +1,772 @@
-# my-bakery
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Golden Crumb Bakery – Jaipur's Finest Artisan Bakery</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400;1,600&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF6F0;
+    --warm-white: #FFF9F2;
+    --brown-dark: #3B1F0A;
+    --brown-mid: #7B4A1E;
+    --brown-light: #C8843A;
+    --gold: #D4A843;
+    --rose: #E8C4B8;
+    --sage: #8A9E7A;
+    --pink-hot: #FF3FA4;
+    --red-deep: #8B1A1A;
+    --text-dark: #1A0F08;
+    --text-mid: #5A3E2B;
+    --text-light: #9A7A60;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ── LOADER ── */
+  #loader {
+    position: fixed; inset: 0; background: var(--brown-dark);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s;
+  }
+  #loader.hide { opacity: 0; visibility: hidden; }
+  .loader-logo { font-family: 'Dancing Script', cursive; color: var(--gold); font-size: 3rem; animation: pulse 1.5s infinite; }
+  .loader-bar { width: 200px; height: 3px; background: #ffffff22; border-radius: 2px; margin-top: 1.5rem; overflow: hidden; }
+  .loader-fill { height: 100%; background: var(--gold); border-radius: 2px; animation: load 2s ease forwards; }
+  @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+  @keyframes load { 0%{width:0%} 100%{width:100%} }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    background: var(--brown-dark); color: var(--gold);
+    text-align: center; padding: 0.6rem; font-size: 0.78rem; letter-spacing: 0.15em;
+    text-transform: uppercase; font-weight: 500;
+  }
+  .top-bar span { animation: marqueeText 20s linear infinite; display: inline-block; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,246,240,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(59,31,10,0.1);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 4rem; transition: box-shadow 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 30px rgba(59,31,10,0.12); }
+  .nav-logo { font-family: 'Dancing Script', cursive; font-size: 2rem; color: var(--brown-dark); text-decoration: none; font-weight: 700; }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--text-mid); font-size: 0.9rem; font-weight: 500; letter-spacing: 0.05em; transition: color 0.3s; position: relative; }
+  .nav-links a::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:2px; background:var(--gold); transition:width 0.3s; }
+  .nav-links a:hover { color: var(--brown-dark); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
+  .cart-btn {
+    background: var(--brown-dark); color: var(--cream); border: none; cursor: pointer;
+    padding: 0.7rem 1.4rem; border-radius: 50px; font-size: 0.9rem; font-weight: 600;
+    display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s;
+    font-family: 'Inter', sans-serif;
+  }
+  .cart-btn:hover { background: var(--brown-mid); transform: scale(1.05); }
+  .cart-count {
+    background: var(--gold); color: var(--brown-dark); border-radius: 50%;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh; position: relative; display: flex; align-items: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, #3B1F0A 0%, #7B4A1E 50%, #C8843A 100%);
+  }
+  .hero-bg-anim {
+    position: absolute; inset: 0; opacity: 0.08;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    animation: bgDrift 20s linear infinite;
+  }
+  @keyframes bgDrift { 0%{transform:translate(0,0)} 100%{transform:translate(60px,60px)} }
+
+  .hero-content { position: relative; z-index: 2; padding: 4rem 4rem 4rem 6rem; max-width: 60%; }
+  .hero-eyebrow { color: var(--gold); font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 600; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s 0.5s forwards; }
+  .hero-title { font-family: 'Playfair Display', serif; font-size: 5.5rem; font-weight: 800; color: var(--cream); line-height: 1.05; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s 0.7s forwards; }
+  .hero-title em { font-style: italic; color: var(--gold); display: block; }
+  .hero-sub { color: rgba(250,246,240,0.75); font-size: 1.1rem; line-height: 1.7; max-width: 500px; margin-bottom: 2.5rem; opacity: 0; animation: fadeUp 0.8s 0.9s forwards; }
+  .hero-ctas { display: flex; gap: 1rem; opacity: 0; animation: fadeUp 0.8s 1.1s forwards; }
+  .btn-primary { background: var(--gold); color: var(--brown-dark); padding: 1rem 2.5rem; border-radius: 50px; font-weight: 700; text-decoration: none; font-size: 0.95rem; letter-spacing: 0.05em; transition: all 0.3s; display: inline-block; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-primary:hover { background: #f0c050; transform: translateY(-3px); box-shadow: 0 12px 30px rgba(212,168,67,0.4); }
+  .btn-outline { background: transparent; color: var(--cream); padding: 1rem 2.5rem; border-radius: 50px; font-weight: 600; text-decoration: none; font-size: 0.95rem; letter-spacing: 0.05em; transition: all 0.3s; border: 2px solid rgba(250,246,240,0.4); cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-outline:hover { border-color: var(--cream); background: rgba(250,246,240,0.1); }
+
+  .hero-float {
+    position: absolute; right: -2rem; top: 50%; transform: translateY(-50%);
+    width: 48%; z-index: 2; opacity: 0; animation: fadeLeft 1s 1.2s forwards;
+  }
+  .hero-float-img {
+    width: 100%; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: -40px 40px 80px rgba(0,0,0,0.4);
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+
+  .hero-scroll { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: rgba(250,246,240,0.5); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; }
+  .scroll-dot { width: 1px; height: 50px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scrollDot 2s ease-in-out infinite; }
+  @keyframes scrollDot { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform:scaleY(1);transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeLeft { from{opacity:0;transform:translateX(50px) translateY(-50%)} to{opacity:1;transform:translateX(0) translateY(-50%)} }
+
+  /* ── TICKER ── */
+  .ticker { background: var(--gold); padding: 0.9rem 0; overflow: hidden; }
+  .ticker-inner { display: flex; gap: 3rem; white-space: nowrap; animation: ticker 25s linear infinite; }
+  .ticker-item { color: var(--brown-dark); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .ticker-dot { color: var(--brown-dark); opacity: 0.5; }
+  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  /* ── SECTION COMMONS ── */
+  section { padding: 6rem 4rem; }
+  .section-eyebrow { color: var(--gold); font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 600; margin-bottom: 1rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 800; color: var(--brown-dark); line-height: 1.15; margin-bottom: 1rem; }
+  .section-title em { font-style: italic; color: var(--brown-mid); }
+  .section-sub { color: var(--text-mid); font-size: 1rem; line-height: 1.7; max-width: 520px; }
+
+  /* ── ABOUT ── */
+  .about { background: var(--warm-white); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; max-width: 1200px; margin: 0 auto; }
+  .about-visual { position: relative; }
+  .about-img-main {
+    width: 100%; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    box-shadow: 20px 20px 60px rgba(59,31,10,0.2);
+    transition: border-radius 1s ease;
+  }
+  .about-img-main:hover { border-radius: 50%; }
+  .about-badge {
+    position: absolute; bottom: -2rem; right: -2rem;
+    background: var(--brown-dark); color: var(--cream); border-radius: 50%;
+    width: 140px; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: rotateBadge 15s linear infinite;
+  }
+  .about-badge-num { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800; color: var(--gold); line-height: 1; }
+  .about-badge-text { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; text-align: center; padding: 0 1rem; }
+  @keyframes rotateBadge { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+  .about-text { padding: 1rem 0; }
+  .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+  .about-feat { padding: 1.2rem; background: var(--cream); border-radius: 16px; border-left: 3px solid var(--gold); }
+  .about-feat-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
+  .about-feat-title { font-weight: 700; color: var(--brown-dark); font-size: 0.9rem; margin-bottom: 0.2rem; }
+  .about-feat-desc { font-size: 0.82rem; color: var(--text-light); }
+
+  /* ── MENU / PRODUCTS ── */
+  .menu { background: var(--cream); }
+  .menu-header { display: flex; justify-content: space-between; align-items: flex-end; max-width: 1200px; margin: 0 auto 3rem; }
+  .menu-filters { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+  .filter-btn { background: none; border: 2px solid var(--rose); color: var(--text-mid); padding: 0.5rem 1.2rem; border-radius: 50px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; font-family: 'Inter', sans-serif; }
+  .filter-btn.active, .filter-btn:hover { background: var(--brown-dark); border-color: var(--brown-dark); color: var(--cream); }
+  .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1200px; margin: 0 auto; }
+  .product-card {
+    background: var(--warm-white); border-radius: 24px; overflow: hidden;
+    box-shadow: 0 4px 20px rgba(59,31,10,0.08);
+    transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), box-shadow 0.4s;
+    cursor: pointer; position: relative;
+  }
+  .product-card:hover { transform: translateY(-12px); box-shadow: 0 20px 50px rgba(59,31,10,0.18); }
+  .product-card-img-wrap { position: relative; overflow: hidden; height: 240px; }
+  .product-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+  .product-card:hover .product-card-img { transform: scale(1.1); }
+  .product-badge { position: absolute; top: 1rem; left: 1rem; background: var(--gold); color: var(--brown-dark); padding: 0.3rem 0.9rem; border-radius: 50px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+  .product-badge.hot { background: var(--pink-hot); color: white; }
+  .product-badge.new { background: var(--sage); color: white; }
+  .product-card-body { padding: 1.5rem; }
+  .product-name { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--brown-dark); margin-bottom: 0.4rem; }
+  .product-desc { font-size: 0.85rem; color: var(--text-light); line-height: 1.6; margin-bottom: 1.2rem; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-size: 1.4rem; font-weight: 800; color: var(--brown-dark); }
+  .product-price span { font-size: 0.85rem; font-weight: 500; color: var(--text-light); }
+  .add-to-cart-btn {
+    background: var(--brown-dark); color: var(--cream); border: none; cursor: pointer;
+    padding: 0.7rem 1.4rem; border-radius: 50px; font-size: 0.85rem; font-weight: 700;
+    transition: all 0.3s; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 0.4rem;
+  }
+  .add-to-cart-btn:hover { background: var(--gold); color: var(--brown-dark); transform: scale(1.05); }
+  .add-to-cart-btn.added { background: var(--sage); }
+
+  /* ── STATS STRIP ── */
+  .stats-strip { background: var(--brown-dark); padding: 4rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; max-width: 1000px; margin: 0 auto; text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 800; color: var(--gold); display: block; }
+  .stat-label { color: rgba(250,246,240,0.6); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.3rem; display: block; }
+
+  /* ── SPECIAL OFFER BANNER ── */
+  .offer-banner {
+    background: linear-gradient(135deg, var(--rose) 0%, #f5d5c8 100%);
+    padding: 3rem 4rem; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .offer-banner::before {
+    content: '🎉'; font-size: 8rem; position: absolute; left: 5%; top: 50%; transform: translateY(-50%); opacity: 0.15;
+  }
+  .offer-banner::after {
+    content: '🎊'; font-size: 8rem; position: absolute; right: 5%; top: 50%; transform: translateY(-50%); opacity: 0.15;
+  }
+  .offer-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800; color: var(--brown-dark); margin-bottom: 0.5rem; }
+  .offer-sub { color: var(--text-mid); font-size: 1.05rem; margin-bottom: 1.5rem; }
+  .offer-highlight { display: inline-block; background: var(--brown-dark); color: var(--gold); padding: 0.8rem 2rem; border-radius: 12px; font-weight: 800; font-size: 1.2rem; letter-spacing: 0.05em; }
+
+  /* ── CONTACT ── */
+  .contact { background: var(--warm-white); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; max-width: 1100px; margin: 0 auto; }
+  .contact-info { padding-top: 1rem; }
+  .contact-detail { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem; }
+  .contact-icon { width: 48px; height: 48px; background: var(--brown-dark); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .contact-detail-text strong { display: block; color: var(--brown-dark); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.2rem; }
+  .contact-detail-text span { color: var(--text-mid); font-size: 0.95rem; }
+  .contact-map { background: #e8ddd5; border-radius: 24px; height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 1.5rem; }
+  .contact-map iframe { width: 100%; height: 100%; border: none; border-radius: 24px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--brown-dark); color: var(--cream);
+    padding: 4rem; text-align: center;
+  }
+  .footer-logo { font-family: 'Dancing Script', cursive; font-size: 3rem; color: var(--gold); margin-bottom: 0.5rem; }
+  .footer-tagline { color: rgba(250,246,240,0.5); font-size: 0.9rem; margin-bottom: 2rem; }
+  .footer-links { display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
+  .footer-links a { color: rgba(250,246,240,0.6); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-bottom { border-top: 1px solid rgba(250,246,240,0.1); padding-top: 1.5rem; color: rgba(250,246,240,0.4); font-size: 0.8rem; }
+
+  /* ── CART SIDEBAR ── */
+  .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; opacity: 0; visibility: hidden; transition: all 0.3s; }
+  .cart-overlay.open { opacity: 1; visibility: visible; }
+  .cart-sidebar {
+    position: fixed; right: 0; top: 0; bottom: 0; width: 420px;
+    background: var(--warm-white); z-index: 201; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    display: flex; flex-direction: column; box-shadow: -10px 0 40px rgba(0,0,0,0.2);
+  }
+  .cart-sidebar.open { transform: translateX(0); }
+  .cart-header { padding: 1.5rem; border-bottom: 1px solid var(--rose); display: flex; justify-content: space-between; align-items: center; }
+  .cart-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--brown-dark); }
+  .cart-close { background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-mid); transition: color 0.3s; }
+  .cart-close:hover { color: var(--brown-dark); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 1.5rem; }
+  .cart-empty { text-align: center; padding: 3rem 1rem; }
+  .cart-empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .cart-empty-text { color: var(--text-light); font-size: 0.95rem; }
+  .cart-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(200,132,58,0.15); }
+  .cart-item-img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-weight: 700; color: var(--brown-dark); font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .cart-item-price { color: var(--brown-mid); font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .qty-control { display: flex; align-items: center; gap: 0.5rem; }
+  .qty-btn { background: var(--cream); border: 1px solid var(--rose); color: var(--brown-dark); width: 28px; height: 28px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .qty-btn:hover { background: var(--brown-dark); color: var(--cream); border-color: var(--brown-dark); }
+  .qty-num { font-weight: 700; color: var(--brown-dark); min-width: 24px; text-align: center; }
+  .cart-remove { background: none; border: none; color: #ccc; cursor: pointer; font-size: 1.1rem; align-self: flex-start; transition: color 0.2s; }
+  .cart-remove:hover { color: #e44; }
+  .cart-footer { padding: 1.5rem; border-top: 1px solid var(--rose); }
+  .cart-subtotal { display: flex; justify-content: space-between; font-weight: 600; color: var(--text-mid); margin-bottom: 0.5rem; font-size: 0.9rem; }
+  .discount-row { display: flex; justify-content: space-between; font-weight: 700; color: var(--sage); margin-bottom: 0.5rem; font-size: 0.9rem; background: rgba(138,158,122,0.1); padding: 0.6rem 0.8rem; border-radius: 8px; }
+  .discount-info { font-size: 0.78rem; color: var(--sage); margin-bottom: 0.8rem; text-align: center; }
+  .cart-total { display: flex; justify-content: space-between; font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 800; color: var(--brown-dark); margin-bottom: 1.2rem; padding-top: 0.8rem; border-top: 2px solid var(--rose); }
+  .checkout-btn {
+    width: 100%; background: var(--brown-dark); color: var(--cream); border: none;
+    padding: 1.1rem; border-radius: 16px; font-size: 1rem; font-weight: 700; cursor: pointer;
+    transition: all 0.3s; font-family: 'Inter', sans-serif; letter-spacing: 0.05em;
+  }
+  .checkout-btn:hover { background: var(--gold); color: var(--brown-dark); }
+  .discount-threshold { background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05)); border: 1px dashed var(--gold); border-radius: 10px; padding: 0.8rem; margin-bottom: 1rem; text-align: center; }
+  .discount-threshold p { font-size: 0.82rem; color: var(--brown-mid); }
+  .discount-threshold strong { color: var(--brown-dark); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--brown-dark); color: var(--cream); padding: 1rem 2rem; border-radius: 50px;
+    font-weight: 600; font-size: 0.9rem; z-index: 300; transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+    display: flex; align-items: center; gap: 0.7rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero-content { max-width: 100%; padding: 2rem; }
+    .hero-title { font-size: 3.2rem; }
+    .hero-float { display: none; }
+    .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .products-grid { grid-template-columns: 1fr 1fr; }
+    section { padding: 4rem 1.5rem; }
+    .cart-sidebar { width: 100%; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media(max-width: 600px) {
+    .products-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">Golden Crumb</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <span>🍪 Free delivery on orders above ₹999 &nbsp;|&nbsp; 📞 +91 837-687-365 &nbsp;|&nbsp; 📍 Jaipur, Rajasthan &nbsp;|&nbsp; ✨ Freshly baked every morning &nbsp;&nbsp;&nbsp;&nbsp; 🍪 Free delivery on orders above ₹999 &nbsp;|&nbsp; 📞 +91 837-687-365 &nbsp;|&nbsp; 📍 Jaipur, Rajasthan &nbsp;|&nbsp; ✨ Freshly baked every morning &nbsp;&nbsp;&nbsp;&nbsp;</span>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">Golden <span>Crumb</span></a>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="openCart()">
+      🛒 Cart
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-anim"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">✦ Jaipur's Finest Artisan Bakery ✦</p>
+    <h1 class="hero-title">
+      Baked with <em>Heart &amp; Soul</em>
+    </h1>
+    <p class="hero-sub">Every crumb tells a story of passion. At Golden Crumb, we craft each treat from scratch — using time-honored recipes, the finest ingredients, and a whole lot of love — right here in the Pink City.</p>
+    <div class="hero-ctas">
+      <a href="#menu" class="btn-primary">Explore Our Menu →</a>
+      <a href="#about" class="btn-outline">Our Story</a>
+    </div>
+  </div>
+  <div class="hero-float">
+    <img class="hero-float-img" src="https://images.unsplash.com/photo-1568254183919-78a4f43a2877?w=700&q=80" alt="Beautiful pastries" />
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-dot"></div>
+    scroll
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">🍪 Homemade Cookies</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🍩 Signature Donuts</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🧁 Artisan Cupcakes</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🍫 Fudgy Brownies</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🥐 Buttery Croissants</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🎂 Custom Cakes</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🍰 Pastry Dreams</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🍪 Homemade Cookies</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🍩 Signature Donuts</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🧁 Artisan Cupcakes</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🍫 Fudgy Brownies</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🥐 Buttery Croissants</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🎂 Custom Cakes</span><span class="ticker-dot">✦</span>
+    <span class="ticker-item">🍰 Pastry Dreams</span><span class="ticker-dot">✦</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-grid">
+    <div class="about-visual reveal-left">
+      <img class="about-img-main" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80" alt="Baker at work" />
+      <div class="about-badge">
+        <span class="about-badge-num">12+</span>
+        <span class="about-badge-text">Years of Baking Love</span>
+      </div>
+    </div>
+    <div class="about-text reveal-right">
+      <p class="section-eyebrow">Our Story</p>
+      <h2 class="section-title">Born in Jaipur,<br><em>Baked with Purpose</em></h2>
+      <p class="section-sub">Golden Crumb started as a home kitchen dream in the heart of Jaipur — a city of colour, culture, and culinary magic. What began as a family passion has grown into the Pink City's most beloved artisan bakery. We believe extraordinary baking deserves extraordinary ingredients: Belgian chocolate, French butter, real Madagascar vanilla.</p>
+      <div class="about-features">
+        <div class="about-feat">
+          <div class="about-feat-icon">🌿</div>
+          <div class="about-feat-title">Fresh Every Day</div>
+          <div class="about-feat-desc">Baked at dawn, delivered by morning — no preservatives, ever.</div>
+        </div>
+        <div class="about-feat">
+          <div class="about-feat-icon">🏆</div>
+          <div class="about-feat-title">Award-Winning</div>
+          <div class="about-feat-desc">Recognised as Jaipur's Top Artisan Bakery for 3 years running.</div>
+        </div>
+        <div class="about-feat">
+          <div class="about-feat-icon">💌</div>
+          <div class="about-feat-title">Custom Orders</div>
+          <div class="about-feat-desc">Weddings, birthdays, corporate gifting — we bake your story.</div>
+        </div>
+        <div class="about-feat">
+          <div class="about-feat-icon">🚚</div>
+          <div class="about-feat-title">City-Wide Delivery</div>
+          <div class="about-feat-desc">Across Jaipur, same-day delivery on orders placed before noon.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stats-grid">
+    <div class="reveal">
+      <span class="stat-num" data-target="50000">0</span>
+      <span class="stat-label">Happy Customers</span>
+    </div>
+    <div class="reveal">
+      <span class="stat-num" data-target="120">0</span>
+      <span class="stat-label">Menu Items</span>
+    </div>
+    <div class="reveal">
+      <span class="stat-num" data-target="12">0</span>
+      <span class="stat-label">Years of Craft</span>
+    </div>
+    <div class="reveal">
+      <span class="stat-num" data-target="100">0</span>
+      <span class="stat-label">% Handmade</span>
+    </div>
+  </div>
+</div>
+
+<!-- SPECIAL OFFER BANNER -->
+<div class="offer-banner reveal">
+  <h3 class="offer-title">🎉 Big Order, Bigger Savings!</h3>
+  <p class="offer-sub">Orders above ₹5,000 get an exclusive discount automatically applied at checkout</p>
+  <div class="offer-highlight">✨ 10% OFF on orders above ₹5,000</div>
+</div>
+
+<!-- MENU -->
+<section class="menu" id="menu">
+  <div class="menu-header reveal">
+    <div>
+      <p class="section-eyebrow">Our Menu</p>
+      <h2 class="section-title">Every Bite, <em>A Memory</em></h2>
+    </div>
+    <div class="menu-filters">
+      <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
+      <button class="filter-btn" onclick="filterProducts('cookies', this)">Cookies</button>
+      <button class="filter-btn" onclick="filterProducts('donuts', this)">Donuts</button>
+      <button class="filter-btn" onclick="filterProducts('cupcakes', this)">Cupcakes</button>
+      <button class="filter-btn" onclick="filterProducts('brownies', this)">Brownies</button>
+      <button class="filter-btn" onclick="filterProducts('croissants', this)">Croissants</button>
+    </div>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-grid">
+    <div class="reveal-left">
+      <p class="section-eyebrow">Find Us</p>
+      <h2 class="section-title">Come Say <em>Hello</em></h2>
+      <p class="section-sub" style="margin-bottom: 2rem;">Whether you want to pick up your order or just want to smell fresh bread — our doors are always open.</p>
+      <div class="contact-info">
+        <div class="contact-detail">
+          <div class="contact-icon">📍</div>
+          <div class="contact-detail-text">
+            <strong>Address</strong>
+            <span>Golden Crumb Bakery, Jaipur, Rajasthan, India – 302 001</span>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-icon">📞</div>
+          <div class="contact-detail-text">
+            <strong>Phone</strong>
+            <span>+91 837-687-365</span>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-icon">✉️</div>
+          <div class="contact-detail-text">
+            <strong>Email</strong>
+            <span>baker@gmail.com</span>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-icon">🕐</div>
+          <div class="contact-detail-text">
+            <strong>Hours</strong>
+            <span>Mon–Sat: 8am – 9pm &nbsp;|&nbsp; Sun: 9am – 7pm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal-right">
+      <div class="contact-map">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.553!2d75.7873!3d26.9124!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396db40b9464ef0f%3A0x6ef82a71a5f3e9!2sJaipur%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1630000000000!5m2!1sen!2sin"
+          allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Golden Crumb</div>
+  <p class="footer-tagline">Baked with love in the Pink City since 2012</p>
+  <div class="footer-links">
+    <a href="#menu">Menu</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="mailto:baker@gmail.com">baker@gmail.com</a>
+    <a href="tel:+918376873650">+91 837-687-365</a>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Golden Crumb Bakery, Jaipur, Rajasthan, India. All rights reserved.</p>
+    <p style="margin-top:0.3rem;">Crafted with 🤍 for every sweet tooth in the Pink City</p>
+  </div>
+</footer>
+
+<!-- CART OVERLAY & SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <span class="cart-title">🛒 Your Order</span>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🍪</div>
+      <p class="cart-empty-text">Your cart is empty.<br>Add some delicious treats!</p>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="discount-threshold" id="discountThreshold">
+      <p>Add <strong id="amountToDiscount">₹5,000</strong> more to unlock <strong>10% discount!</strong></p>
+    </div>
+    <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+    <div class="discount-row" id="discountRow" style="display:none">
+      <span>🎉 10% Discount Applied!</span>
+      <span id="discountAmt">-₹0</span>
+    </div>
+    <div class="discount-info" id="discountInfo" style="display:none">For orders above ₹5,000 — keep treating yourself! 🎊</div>
+    <div class="cart-total"><span>Total</span><span id="cartTotal">₹0</span></div>
+    <button class="checkout-btn" onclick="checkout()">Place Order →</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ Added to cart!</div>
+
+<script>
+// ── PRODUCTS DATA ──
+const products = [
+  { id:1, name:"Classic Choco Chip Cookies", category:"cookies", price:349, badge:"bestseller", desc:"Our most-loved cookies — golden edges, chewy centers, loaded with Belgian chocolate chips. A Golden Crumb legend.", img:"https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&q=80" },
+  { id:2, name:"Rainbow Glazed Donuts", category:"donuts", price:299, badge:"hot", desc:"Vibrant, joyful, irresistible. Pink-glazed donuts showered in sprinkles — happiness in every bite, available in 6 colours.", img:"https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80" },
+  { id:3, name:"Red Velvet Cupcake", category:"cupcakes", price:189, badge:"new", desc:"Velvety crimson sponge crowned with silky cream cheese frosting and a fresh berry. A little frosting makes everything better.", img:"https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=500&q=80" },
+  { id:4, name:"Fudgy Belgian Brownies", category:"brownies", price:249, badge:"bestseller", desc:"Dense, gooey, and devastatingly chocolatey. Made with 70% Belgian cocoa for that perfect crinkle-top crust.", img:"https://images.unsplash.com/photo-1607920591413-4ec007e70023?w=500&q=80" },
+  { id:5, name:"Butter Croissant", category:"croissants", price:159, badge:null, desc:"Laminated in European butter, slow-fermented for 36 hours. Flaky golden layers that shatter just right — warm from the oven.", img:"https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&q=80" },
+  { id:6, name:"Chocolate Drizzle Croissant", category:"croissants", price:199, badge:"new", desc:"Our classic croissant draped in rich dark chocolate ganache — the morning indulgence you didn't know you needed.", img:"https://images.unsplash.com/photo-1509461399763-ae67a981b254?w=500&q=80" },
+  { id:7, name:"Assorted Cookie Box", category:"cookies", price:599, badge:"hot", desc:"A curated collection of 12 handcrafted cookies — choco chip, oatmeal raisin, double dark, and white chocolate macadamia.", img:"https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=500&q=80" },
+  { id:8, name:"Strawberry Glazed Donut", category:"donuts", price:149, badge:null, desc:"Hand-cut, fluffy yeast donut swathed in strawberry glaze with a dusting of dried strawberry flakes. Sweet and bright.", img:"https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=500&q=80" },
+  { id:9, name:"Truffle Brownie Tower", category:"brownies", price:899, badge:"bestseller", desc:"Six towering brownie squares infused with truffle ganache and sea salt flakes — the ultimate gift for chocolate lovers.", img:"https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=500&q=80" },
+];
+
+// ── RENDER PRODUCTS ──
+let activeFilter = 'all';
+function renderProducts(filter) {
+  const grid = document.getElementById('productsGrid');
+  const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+  grid.innerHTML = '';
+  filtered.forEach((p, i) => {
+    const badgeHTML = p.badge ? `<span class="product-badge ${p.badge === 'hot' ? 'hot' : p.badge === 'new' ? 'new' : ''}">${p.badge === 'bestseller' ? '⭐ Best Seller' : p.badge === 'hot' ? '🔥 Hot' : '✨ New'}</span>` : '';
+    const div = document.createElement('div');
+    div.className = 'product-card reveal';
+    div.style.transitionDelay = `${i * 0.08}s`;
+    div.innerHTML = `
+      <div class="product-card-img-wrap">
+        <img class="product-card-img" src="${p.img}" alt="${p.name}" loading="lazy">
+        ${badgeHTML}
+      </div>
+      <div class="product-card-body">
+        <h3 class="product-name">${p.name}</h3>
+        <p class="product-desc">${p.desc}</p>
+        <div class="product-footer">
+          <div class="product-price">₹${p.price} <span>/ piece</span></div>
+          <button class="add-to-cart-btn" id="btn-${p.id}" onclick="addToCart(${p.id})">+ Add</button>
+        </div>
+      </div>`;
+    grid.appendChild(div);
+  });
+  observeReveal();
+}
+function filterProducts(cat, btn) {
+  activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(cat);
+}
+renderProducts('all');
+
+// ── CART STATE ──
+let cart = [];
+function addToCart(id) {
+  const product = products.find(p => p.id === id);
+  const existing = cart.find(i => i.id === id);
+  if (existing) existing.qty++;
+  else cart.push({ ...product, qty: 1 });
+  updateCartUI();
+  showToast(`🍞 ${product.name} added to cart!`);
+  const btn = document.getElementById(`btn-${id}`);
+  if (btn) { btn.textContent = '✓ Added'; btn.classList.add('added'); setTimeout(() => { btn.textContent = '+ Add'; btn.classList.remove('added'); }, 1200); }
+}
+function removeFromCart(id) {
+  cart = cart.filter(i => i.id !== id);
+  updateCartUI();
+}
+function changeQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) removeFromCart(id);
+  else updateCartUI();
+}
+
+const DISCOUNT_THRESHOLD = 5000;
+const DISCOUNT_RATE = 0.10;
+
+function updateCartUI() {
+  const count = cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cartCount').textContent = count;
+  const itemsEl = document.getElementById('cartItems');
+  const footerEl = document.getElementById('cartFooter');
+  if (cart.length === 0) {
+    itemsEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🍪</div><p class="cart-empty-text">Your cart is empty.<br>Add some delicious treats!</p></div>`;
+    footerEl.style.display = 'none';
+    return;
+  }
+  itemsEl.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <img class="cart-item-img" src="${item.img}" alt="${item.name}">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">₹${item.price} each</div>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+        </div>
+      </div>
+      <button class="cart-remove" onclick="removeFromCart(${item.id})">🗑</button>
+    </div>
+  `).join('');
+  footerEl.style.display = 'block';
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const hasDiscount = subtotal >= DISCOUNT_THRESHOLD;
+  const discount = hasDiscount ? Math.round(subtotal * DISCOUNT_RATE) : 0;
+  const total = subtotal - discount;
+  document.getElementById('cartSubtotal').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+  document.getElementById('cartTotal').textContent = `₹${total.toLocaleString('en-IN')}`;
+  const drRow = document.getElementById('discountRow');
+  const drInfo = document.getElementById('discountInfo');
+  const dtEl = document.getElementById('discountThreshold');
+  const amtEl = document.getElementById('amountToDiscount');
+  if (hasDiscount) {
+    drRow.style.display = 'flex';
+    drInfo.style.display = 'block';
+    dtEl.style.display = 'none';
+    document.getElementById('discountAmt').textContent = `-₹${discount.toLocaleString('en-IN')}`;
+  } else {
+    drRow.style.display = 'none';
+    drInfo.style.display = 'none';
+    dtEl.style.display = 'block';
+    amtEl.textContent = `₹${(DISCOUNT_THRESHOLD - subtotal).toLocaleString('en-IN')}`;
+  }
+}
+
+function openCart() { document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartSidebar').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartSidebar').classList.remove('open'); document.body.style.overflow = ''; }
+
+function checkout() {
+  const count = cart.reduce((s, i) => s + i.qty, 0);
+  if (count === 0) return;
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const discount = subtotal >= DISCOUNT_THRESHOLD ? Math.round(subtotal * DISCOUNT_RATE) : 0;
+  const total = subtotal - discount;
+  const msg = `🧁 Order placed! Total: ₹${total.toLocaleString('en-IN')}${discount ? ` (saved ₹${discount}!)` : ''}. We'll call you at +91 837-687-365 to confirm. Thank you! 🤍`;
+  cart = [];
+  updateCartUI();
+  closeCart();
+  showToast(msg);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── SCROLL ANIMATIONS ──
+function observeReveal() {
+  const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  els.forEach(el => obs.observe(el));
+}
+observeReveal();
+
+// ── COUNT UP ──
+function countUp() {
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const target = +el.getAttribute('data-target');
+    const suffix = target === 100 ? '%' : target >= 1000 ? '+' : '+';
+    let cur = 0;
+    const step = target / 60;
+    const interval = setInterval(() => {
+      cur = Math.min(cur + step, target);
+      el.textContent = Math.floor(cur).toLocaleString('en-IN') + suffix;
+      if (cur >= target) clearInterval(interval);
+    }, 25);
+  });
+}
+const statsObs = new IntersectionObserver(entries => { if (entries[0].isIntersecting) { countUp(); statsObs.disconnect(); } }, { threshold: 0.3 });
+statsObs.observe(document.querySelector('.stats-strip'));
+
+// ── NAV SCROLL ──
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ── LOADER ──
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('loader').classList.add('hide'), 2200);
+});
+</script>
+</body>
+</html>
